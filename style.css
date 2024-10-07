@@ -1,0 +1,101 @@
+
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+
+body {
+   width: 100vw;
+   height: 100vh;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   gap: 20px;
+}
+#cardList {
+   display: grid;
+   gap: 10px;
+}
+
+#cardList.easy {
+   grid-template-columns: repeat(4, 1fr);
+   grid-template-rows: repeat(4, 1fr);
+}
+#cardList.medium {
+   grid-template-columns: repeat(5, 1fr);
+   grid-template-rows: repeat(4, 1fr);
+}
+#cardList.hard {
+   grid-template-columns: repeat(6, 1fr);
+   grid-template-rows: repeat(4, 1fr);
+}
+
+.card {
+   width: 110px;
+   height: 110px;
+   border: 1px solid black;
+   cursor:pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background: yellow;
+}
+
+
+img {
+   width: 90%;
+   height: 90%;
+   opacity: 0;
+   transition: 0.4s ease;
+}
+
+.card.clicked > img {
+   opacity: 1;
+}
+
+.card.clicked {
+   background: orange;
+}
+
+.card.match {
+   background: green;
+
+}
+.card.match > img {
+opacity: 1;
+}
+
+.card.clicked.wrong {
+   background: red;
+}
+
+button {
+   padding: 5px;
+   cursor: pointer;
+}
+
+input[type="radio"] {
+   display: none;
+}
+
+input[type="radio"]:checked + label {
+   background-color: #e22828;
+   color: white;
+ }
+
+label {
+   padding: 4px;
+   cursor: pointer;
+   border: 1px solid #ccc;
+   margin-right: 10px;
+   border-radius: 4px;
+   transition: 0.6s ease;
+ }
+
+ .difficulty {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }

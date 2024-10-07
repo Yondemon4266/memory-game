@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="difficulty">
+      <div>
+        <input type="radio" name="difficulties" id="easy" checked/>
+        <label for="easy">Easy</label>
+
+      </div>
+      <div>
+        <input type="radio" name="difficulties" id="medium" />
+        <label for="medium">Medium</label>
+      </div>
+      <div>
+        <input type="radio" name="difficulties" id="hard" />
+        <label for="hard">Hard</label>
+      </div>
+    </div>
+    <button type="button" id="start">Play</button>
+    <div id="cardList"></div>
+    <button type="button" id="reset">Reset game</button>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
