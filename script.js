@@ -1,47 +1,50 @@
 const cardURLS = [
   { id: 0, animal: "aigle", url: "./images/aigle.png" },
-  { id: 1, animal: "cat", url: "./images/cat.png" },
-  { id: 2, animal: "cheval", url: "./images/cheval.png" },
-  { id: 3, animal: "kangaroo", url: "./images/kangaroo.png" },
-  { id: 4, animal: "koala", url: "./images/koala.png" },
-  { id: 5, animal: "lapin", url: "./images/lapin.png" },
-  { id: 6, animal: "lion", url: "./images/lion.png" },
-  { id: 7, animal: "monkey", url: "./images/monkey.png" },
-  { id: 8, animal: "panda", url: "./images/panda.png" },
-  { id: 9, animal: "phoque", url: "./images/phoque.png" },
-  { id: 10, animal: "poule", url: "./images/poule.png" },
-  { id: 11, animal: "rhino", url: "./images/rhino.png" },
-  { id: 12, animal: "aigle", url: "./images/aigle.png" },
-  { id: 13, animal: "cat", url: "./images/cat.png" },
-  { id: 14, animal: "cheval", url: "./images/cheval.png" },
-  { id: 15, animal: "kangaroo", url: "./images/kangaroo.png" },
-  { id: 16, animal: "koala", url: "./images/koala.png" },
-  { id: 17, animal: "lapin", url: "./images/lapin.png" },
-  { id: 18, animal: "lion", url: "./images/lion.png" },
-  { id: 19, animal: "monkey", url: "./images/monkey.png" },
-  { id: 20, animal: "panda", url: "./images/panda.png" },
-  { id: 21, animal: "phoque", url: "./images/phoque.png" },
-  { id: 22, animal: "poule", url: "./images/poule.png" },
+  { id: 1, animal: "aigle", url: "./images/aigle.png" },
+  { id: 2, animal: "cat", url: "./images/cat.png" },
+  { id: 3, animal: "cat", url: "./images/cat.png" },
+  { id: 4, animal: "cheval", url: "./images/cheval.png" },
+  { id: 5, animal: "cheval", url: "./images/cheval.png" },
+  { id: 6, animal: "kangaroo", url: "./images/kangaroo.png" },
+  { id: 7, animal: "kangaroo", url: "./images/kangaroo.png" },
+  { id: 8, animal: "koala", url: "./images/koala.png" },
+  { id: 9, animal: "koala", url: "./images/koala.png" },
+  { id: 10, animal: "lapin", url: "./images/lapin.png" },
+  { id: 11, animal: "lapin", url: "./images/lapin.png" },
+  { id: 12, animal: "lion", url: "./images/lion.png" },
+  { id: 13, animal: "lion", url: "./images/lion.png" },
+  { id: 14, animal: "monkey", url: "./images/monkey.png" },
+  { id: 15, animal: "monkey", url: "./images/monkey.png" },
+  { id: 16, animal: "panda", url: "./images/panda.png" },
+  { id: 17, animal: "panda", url: "./images/panda.png" },
+  { id: 18, animal: "phoque", url: "./images/phoque.png" },
+  { id: 19, animal: "phoque", url: "./images/phoque.png" },
+  { id: 20, animal: "poule", url: "./images/poule.png" },
+  { id: 21, animal: "poule", url: "./images/poule.png" },
+  { id: 22, animal: "rhino", url: "./images/rhino.png" },
   { id: 23, animal: "rhino", url: "./images/rhino.png" },
 ];
 
 class MemoryGame {
-  constructor(difficulty) {
-    this.difficulty = difficulty;
+  constructor() {
+    this.difficulty = "easy";
+    this.cardurls = cardURLS;
+    console.log(this.difficulty);
     this.numberOfCard = this.determineNumberOfCards(this.difficulty);
     this.cardList = document.getElementById("cardList");
-    this.startButton = document.getElementById("start");
+    // this.startButton = document.getElementById("start");
     this.resetButton = document.getElementById("reset");
     this.playing = false;
-    // this.generateCards(this.numberOfCard, this.difficulty);
+    this.startGame();
     this.counter = 0;
     this.firstSelection = null;
     this.secondSelection = null;
     this.foundCards = [];
     this.chronoTime = 300;
     this.chronoInterval = null;
-    this.resetButton.addEventListener("click", this.resetGame);
-    this.startButton.addEventListener("click", this.startGame);
+    this.changeDifficulty();
+
+    this.resetButton.addEventListener("click", this.resetGame.bind(this));
   }
   //   POUR PALLIER DIFFICULTE AU NOMBRE DE CARTES.
   determineNumberOfCards(difficulty) {
@@ -57,9 +60,8 @@ class MemoryGame {
   }
 
   //   GENERER LES CARTES DANS LE DOM
-  generateCards(nb, difficulty) {
-    this.cardList.classList.add(difficulty);
-    cardURLS.slice(0, nb).forEach((card) => {
+  generateCards(nb) {
+    this.cardurls.slice(0, nb).forEach((card) => {
       // CREE LA DIV CARTE ET AJOUTE CLASSE CARD
       const cardDOM = document.createElement("div");
       cardDOM.classList.add("card");
@@ -142,29 +144,46 @@ class MemoryGame {
       this.counter = 0;
     }
   }
+  changeDifficulty() {
+    // Sélectionne tous les boutons radio
+    const radios = document.querySelectorAll("input[type='radio']");
+
+    // Parcourt les boutons radio et trouve celui qui est coché
+    radios.forEach((radio) => {
+      // Ajoute un listener pour chaque changement de sélection
+      radio.addEventListener("change", () => {
+        this.difficulty = radio.id; // Mets à jour `this.difficulty` quand le bouton change
+        this.startGame(); // Démarre le jeu avec la nouvelle difficulté
+      });
+    });
+  }
 
   startGame() {
-    this.generateCards(this.numberOfCard, this.difficulty);
+    this.resetGame();
+    this.cardList.className = this.difficulty;
+    this.numberOfCard = this.determineNumberOfCards(this.difficulty);
+    this.shuffleCards();
+    this.generateCards(this.numberOfCard);
+  }
+
+  shuffleCards() {
+    for (let i = this.numberOfCard - 1; i > 0; i--) {
+      // Générer un index aléatoire entre 0 et i
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+      // Échanger les éléments cardURLS[i] et cardURLS[randomIndex]
+      [this.cardurls[i], this.cardurls[randomIndex]] = [
+        this.cardurls[randomIndex],
+        this.cardurls[i],
+      ];
+    }
   }
 
   resetGame() {
-    Array.from(document.getElementById("cardList").children).forEach(
-      (child) => {
-        child.classList.remove("match");
-      }
-    );
+    Array.from((document.getElementById("cardList").innerHTML = ""));
   }
-
-  // difficultyButtonListener() {
-
-  // }
-
-  // changeDifficulty() {
-
-  // }
 }
 
-const game = new MemoryGame("hard");
+const game = new MemoryGame();
 
 console.log(game);
 
