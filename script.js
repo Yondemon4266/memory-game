@@ -28,23 +28,35 @@ const cardURLS = [
 class MemoryGame {
   constructor() {
     this.difficulty = "easy";
+    this.timeDisplay = document.getElementById("timeDisplay");
+    this.chronoTime = 0;
+    this.bestTime = 0;
+    this.chronoInterval = null;
+    this.timeDisplay.textContent = this.formatTime(this.chronoTime);
+    this.modal = document.getElementById("myModal");
+    this.modalButton = document
+      .getElementById("start")
+      .addEventListener("click", () => {
+        this.modal.style.display = "none";
+        this.startGame();
+      });
+
     this.cardurls = cardURLS;
-    console.log(this.difficulty);
     this.numberOfCard = this.determineNumberOfCards(this.difficulty);
+
     this.cardList = document.getElementById("cardList");
     // this.startButton = document.getElementById("start");
     this.resetButton = document.getElementById("reset");
-    this.playing = false;
-    this.startGame();
+
     this.counter = 0;
     this.firstSelection = null;
     this.secondSelection = null;
     this.foundCards = [];
-    this.chronoTime = 300;
-    this.chronoInterval = null;
+    this.timeRecord = document.getElementById("recordTime");
+    this.timeRecord.innerHTML = `<p>Record : <span style="font-weight: 800">${this.formatTime(
+      this.bestTime
+    )}</span></p>`;
     this.changeDifficulty();
-
-    this.resetButton.addEventListener("click", this.resetGame.bind(this));
   }
   //   POUR PALLIER DIFFICULTE AU NOMBRE DE CARTES.
   determineNumberOfCards(difficulty) {
@@ -59,6 +71,24 @@ class MemoryGame {
     }
   }
 
+  startClock() {
+    this.chronoInterval = setInterval(() => {
+      this.chronoTime++;
+      this.timeDisplay.textContent = this.formatTime(this.chronoTime);
+    }, 1000);
+  }
+  resetClock() {
+    clearInterval(this.chronoInterval);
+    this.chronoTime = 0;
+    this.timeDisplay.textContent = this.formatTime(this.chronoTime);
+  }
+
+  formatTime(seconds) {
+    return `${Math.floor(seconds / 60) < 10 ? "0" : ""}${Math.floor(
+      seconds / 60
+    )} : ${seconds % 60 < 10 ? "0" : ""}${seconds % 60}`;
+  }
+
   //   GENERER LES CARTES DANS LE DOM
   generateCards(nb) {
     this.cardurls.slice(0, nb).forEach((card) => {
@@ -68,6 +98,7 @@ class MemoryGame {
       cardDOM.id = card.id;
       // CREE IMG ET ATTRIBUE L'URL
       const image = document.createElement("img");
+      image.setAttribute("draggable", false);
       image.src = card.url;
       // APPEND IMAGE A LA CARD
       cardDOM.appendChild(image);
@@ -79,7 +110,6 @@ class MemoryGame {
 
   cardClick(card) {
     // Vérifie si la carte est déjà trouvée ou déjà cliquée
-    // if (!this.playing) return;
     if (
       this.foundCards.includes(card.getAttribute("animal")) ||
       card.classList.contains("clicked") ||
@@ -123,8 +153,14 @@ class MemoryGame {
           c.classList.add("match"); // Ajoute la classe "match" aux paires trouvées
         });
         if (this.foundCards.length === this.numberOfCard / 2) {
+          this.bestTime =
+            this.chronoTime > this.bestTime ? this.chronoTime : this.bestTime;
+          this.timeRecord.innerHTML = `<p>Record : <span style="font-weight: 800">${this.formatTime(
+            this.bestTime
+          )}</span></p>`;
+          console.log(this.bestTime);
           setTimeout(() => {
-            alert("end");
+            this.resetClock();
             // END
           }, 1500);
         }
@@ -142,6 +178,8 @@ class MemoryGame {
       this.firstSelection = null;
       this.secondSelection = null;
       this.counter = 0;
+    } else {
+      return;
     }
   }
   changeDifficulty() {
@@ -160,8 +198,6 @@ class MemoryGame {
 
   startGame() {
     this.resetGame();
-    this.cardList.className = this.difficulty;
-    this.numberOfCard = this.determineNumberOfCards(this.difficulty);
     this.shuffleCards();
     this.generateCards(this.numberOfCard);
   }
@@ -179,7 +215,12 @@ class MemoryGame {
   }
 
   resetGame() {
+    this.resetClock();
+    this.startClock();
+
     Array.from((document.getElementById("cardList").innerHTML = ""));
+    this.cardList.className = this.difficulty;
+    this.numberOfCard = this.determineNumberOfCards(this.difficulty);
   }
 }
 

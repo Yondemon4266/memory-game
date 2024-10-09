@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="recordTime"></div>
     <div class="difficulty">
       <div>
         <input type="radio" name="difficulties" id="easy" checked/>
@@ -22,10 +23,17 @@
         <label for="hard">Hard</label>
       </div>
     </div>
+    <div id="timeDisplay"></div>
     <!-- <button type="button" id="start">Play</button> -->
     <div id="cardList"></div>
     <button type="button" id="reset">Reset game</button>
-
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span id="start">PLAY!</span>
+      </div>
+    
+    </div>
     <script type="module" src="script.js"></script>
   </body>
 </html>
