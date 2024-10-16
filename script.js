@@ -44,12 +44,8 @@ class MemoryGame {
     this.changeDifficulty();
     //
     // PENSER A ENREGISTRER LE BEST TIME DANS LOCAL STORAGE.
-    this.bestTimes = localStorage.getItem("times")
-      ? JSON.parse(localStorage.getItem("times"))
-      : null;
-    this.timeRecord.innerHTML = `<p>Record : <span style="font-weight: 800">${this.formatTime(
-      this.bestTimes ? this.bestTimes : 0
-    )}</span></p>`;
+    this.bestTimes = this.getTimeRecords();
+    this.displayBestTime(this.returnBestTimeOfDifficulty(this.difficulty).time);
     //
     this.chronoInterval = null;
     this.modalButton.addEventListener("click", () => {
@@ -58,6 +54,45 @@ class MemoryGame {
     });
   }
 
+  getTimeRecords() {
+    return localStorage.getItem("times")
+      ? JSON.parse(localStorage.getItem("times"))
+      : [];
+  }
+  putTimeRecord(time, difficulty) {
+    this.bestTimes.push({
+      mode: difficulty,
+      time: time,
+      date: Date.now(),
+    });
+    const newTimes = this.bestTimes;
+    console.log(newTimes);
+
+    localStorage.setItem("times", JSON.stringify(newTimes));
+  }
+  returnBestTimeOfDifficulty(difficulty) {
+    if (this.bestTimes) {
+      const filteredTimes = this.bestTimes.filter(
+        (el) => el.mode === difficulty
+      );
+
+      if (filteredTimes.length === 0) {
+        return { time: 0 }; // Aucun enregistrement pour cette difficulté
+      }
+
+      return filteredTimes.reduce((best, current) => {
+        return current.time < best.time ? current : best;
+      });
+    } else {
+      return { time: 0 };
+    }
+  }
+
+  displayBestTime(time) {
+    this.timeRecord.innerHTML = `<p>Record : <span style="font-weight: 800">${this.formatTime(
+      time
+    )}</span></p>`;
+  }
   //
 
   // general
@@ -81,8 +116,13 @@ class MemoryGame {
     radios.forEach((radio) => {
       // Ajoute un listener pour chaque changement de sélection
       radio.addEventListener("change", () => {
-        this.difficulty = radio.id; // Mets à jour `this.difficulty` quand le bouton change
-        this.startGame(); // Démarre le jeu avec la nouvelle difficulté
+        this.difficulty = radio.id;
+        // Mets à jour `this.difficulty` quand le bouton change
+        const bestTime = this.startGame();
+        // Démarre le jeu avec la nouvelle difficulté
+        this.displayBestTime(
+          this.returnBestTimeOfDifficulty(this.difficulty).time
+        );
       });
     });
   }
@@ -186,12 +226,10 @@ class MemoryGame {
           this.determineNumberOfCards(this.difficulty) / 2
         ) {
           this.foundCards = [];
-          if (this.bestTime === null || this.chronoTime < this.bestTime) {
-            this.bestTime = this.chronoTime;
-          }
-          this.timeRecord.innerHTML = `<p>Record : <span style="font-weight: 800">${this.formatTime(
-            this.bestTime
-          )}</span></p>`;
+          this.putTimeRecord(this.chronoTime, this.difficulty);
+          this.displayBestTime(
+            this.returnBestTimeOfDifficulty(this.difficulty).time
+          );
           this.resetClock();
           setTimeout(() => {
             if (confirm("Félicitations ! Rejouer?")) {
